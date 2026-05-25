@@ -1,8 +1,9 @@
 import axios from 'axios';
 import { getToken, deleteToken } from '../utils/storage';
 
-// Using the actual LAN IP of this computer instead of localhost
-const API_BASE_URL = 'http://192.168.231.248:8080/api/v1';
+// Get API URL from .env (e.g., EXPO_PUBLIC_API_URL)
+// Fallback to localhost if env is missing
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://127.0.0.1:8080/api/v1';
 
 const client = axios.create({
   baseURL: API_BASE_URL,
