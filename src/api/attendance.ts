@@ -15,7 +15,7 @@ export interface AttendanceResponse {
 
 export const submitAttendance = async (qrData: string): Promise<AttendanceResponse> => {
   try {
-    const response = await client.post<AttendanceResponse>('/attendance/scan', {
+    const response = await client.post<AttendanceResponse>('/attendances/qr-scan', {
       qr_code_data: qrData,
     });
     return response.data;
