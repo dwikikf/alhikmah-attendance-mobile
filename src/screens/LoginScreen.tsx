@@ -7,7 +7,8 @@ import {
   StyleSheet, 
   KeyboardAvoidingView, 
   Platform,
-  Alert
+  Alert,
+  ActivityIndicator
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -24,16 +25,30 @@ export default function LoginScreen() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation<LoginScreenNavigationProp>();
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!username.trim() || !password.trim()) {
       Alert.alert('Error', 'Silakan masukkan username dan password');
       return;
     }
 
-    console.log('Logging in with:', { username, password });
-    // TODO: Connect to API
+    setIsLoading(true);
+    try {
+      const { login } = await import('../api/auth');
+      const response = await login(username, password);
+      
+      if (response.success) {
+        navigation.replace('Scanner');
+      } else {
+        Alert.alert('Gagal Masuk', response.message || 'Username atau password salah');
+      }
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Terjadi kesalahan saat menghubungi server');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -94,8 +109,16 @@ export default function LoginScreen() {
         </View>
 
         {/* Submit Button */}
-        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-          <Text style={styles.loginButtonText}>Masuk</Text>
+        <TouchableOpacity 
+          style={[styles.loginButton, isLoading && styles.loginButtonDisabled]} 
+          onPress={handleLogin}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <ActivityIndicator color="#FFFFFF" />
+          ) : (
+            <Text style={styles.loginButtonText}>Masuk</Text>
+          )}
         </TouchableOpacity>
       </View>
 
@@ -196,6 +219,9 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  loginButtonDisabled: {
+    opacity: 0.7,
   },
   footerContainer: {
     paddingVertical: 24,

@@ -41,23 +41,23 @@ Update the file after completing each sub-task, not just after completing an ent
   - [x] 2.3 Connect Login inputs to React state
   - [x] 2.4 Create `src/utils/storage.ts` using `expo-secure-store` to save/retrieve JWT tokens
 
-- [ ] 3.0 Implement QR Code Scanner (Camera UI & Logic)
-  - [ ] 3.1 Create `src/screens/ScannerScreen.tsx`
-  - [ ] 3.2 Request Camera permissions on mount using `useCameraPermissions` from `expo-camera`
-  - [ ] 3.3 Implement `CameraView` to render the camera preview
-  - [ ] 3.4 Handle `onBarcodeScanned` event to capture and extract the QR string (NISN, Nama, Kelas)
-  - [ ] 3.5 Prevent continuous rapid scanning by managing a "isScanning" state
+- [x] 3.0 Implement QR Code Scanner (Camera UI & Logic)
+  - [x] 3.1 Create `src/screens/ScannerScreen.tsx`
+  - [x] 3.2 Request Camera permissions on mount using `useCameraPermissions` from `expo-camera`
+  - [x] 3.3 Implement `CameraView` to render the camera preview
+  - [x] 3.4 Handle `onBarcodeScanned` event to capture and extract the QR string (NISN, Nama, Kelas)
+  - [x] 3.5 Prevent continuous rapid scanning by managing a "isScanning" state
 
-- [ ] 4.0 API Integration (Login & Submit Attendance)
-  - [ ] 4.1 Create `src/api/client.ts` Axios instance with base URL and JWT interceptors
-  - [ ] 4.2 Create `src/api/auth.ts` logic to call the backend login endpoint
-  - [ ] 4.3 Connect `LoginScreen.tsx` to the auth API: on success, save token to storage and navigate to `ScannerScreen`
-  - [ ] 4.4 Create `src/api/attendance.ts` to POST attendance data based on scanned QR
-  - [ ] 4.5 Connect QR scan event in `ScannerScreen.tsx` to attendance submission API
-  - [ ] 4.6 Handle expected errors (e.g., duplicate scans: "Siswa sudah ter-scan")
+- [x] 4.0 API Integration (Login & Submit Attendance)
+  - [x] 4.1 Create `src/api/client.ts` Axios instance with base URL and JWT interceptors
+  - [x] 4.2 Create `src/api/auth.ts` logic to call the backend login endpoint
+  - [x] 4.3 Connect `LoginScreen.tsx` to the auth API: on success, save token to storage and navigate to `ScannerScreen`
+  - [x] 4.4 Create `src/api/attendance.ts` to POST attendance data based on scanned QR
+  - [x] 4.5 Connect QR scan event in `ScannerScreen.tsx` to attendance submission API
+  - [x] 4.6 Handle expected errors (e.g., duplicate scans: "Siswa sudah ter-scan")
 
-- [ ] 5.0 UI/UX Polish and Error Handling
-  - [ ] 5.1 Add Loading indicators (ActivityIndicator) to Login and Scanner screens during API requests
-  - [ ] 5.2 Implement Alert or Toast notifications for login failure, successful scan, and invalid QR
-  - [ ] 5.3 Implement auto-resume scan logic (e.g., wait 2 seconds after a successful scan before allowing the next one)
-  - [ ] 5.4 Add a Logout button in the header of the `ScannerScreen` to clear storage and navigate back to Login
+- [x] 5.0 UI/UX Polish and Error Handling
+  - [x] 5.1 Add Loading indicators (ActivityIndicator) to Login and Scanner screens during API requests
+  - [x] 5.2 Implement Alert or Toast notifications for login failure, successful scan, and invalid QR
+  - [x] 5.3 Implement auto-resume scan logic (e.g., wait 2 seconds after a successful scan before allowing the next one)
+  - [x] 5.4 Add a Logout button in the header of the `ScannerScreen` to clear storage and navigate back to Login
