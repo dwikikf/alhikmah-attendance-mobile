@@ -13,10 +13,10 @@ export interface AttendanceResponse {
   data?: any;
 }
 
-export const submitAttendance = async (qrData: string): Promise<AttendanceResponse> => {
+export const submitAttendance = async (nisn: string): Promise<AttendanceResponse> => {
   try {
     const response = await client.post<AttendanceResponse>('/attendances/qr-scan', {
-      qr_code_data: qrData,
+      nisn: nisn,
     });
     return response.data;
   } catch (error: any) {

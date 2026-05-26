@@ -74,11 +74,20 @@ export default function ScannerScreen() {
     setIsProcessing(true);
 
     try {
+      // Parse QR format: NISN|FullName|ClassName
+      const parts = data.split('|');
+      if (parts.length !== 3) {
+        Alert.alert('Gagal', 'Format QR Code tidak valid.');
+        return;
+      }
+      
+      const [nisn, fullName, className] = parts;
+
       // API call to submit attendance
-      const response = await submitAttendance(data);
+      const response = await submitAttendance(nisn);
       
       if (response.success) {
-        Alert.alert('Berhasil', response.message || 'Siswa berhasil di-scan');
+        Alert.alert('Berhasil Absen!', `Siswa: ${fullName} dari kelas ${className} telah tercatat.`);
       } else {
         Alert.alert('Gagal', response.message || 'Gagal memproses QR Code');
       }
