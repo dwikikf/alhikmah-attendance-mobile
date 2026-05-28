@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   View, 
   Text, 
@@ -6,7 +6,9 @@ import {
   TouchableOpacity, 
   Alert, 
   ActivityIndicator,
-  Dimensions
+  Dimensions,
+  Animated,
+  Easing
 } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useNavigation } from '@react-navigation/native';
@@ -29,7 +31,35 @@ export default function ScannerScreen() {
   const [permission, requestPermission] = useCameraPermissions();
   const [isScanning, setIsScanning] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [facing, setFacing] = useState<'front' | 'back'>('back');
+  const [isFlashOn, setIsFlashOn] = useState(false);
   const navigation = useNavigation<ScannerScreenNavigationProp>();
+  
+  const laserAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(laserAnim, {
+          toValue: 1,
+          duration: 1500,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+        Animated.timing(laserAnim, {
+          toValue: 0,
+          duration: 1500,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  }, [laserAnim]);
+
+  const translateY = laserAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [10, SCAN_BOX_SIZE - 12],
+  });
 
   // Prevent back button from going back to login screen easily
   useEffect(() => {
@@ -48,6 +78,14 @@ export default function ScannerScreen() {
       ),
     });
   }, [navigation]);
+
+  const toggleCameraFacing = () => {
+    setFacing(current => (current === 'back' ? 'front' : 'back'));
+  };
+
+  const toggleFlash = () => {
+    setIsFlashOn(prev => !prev);
+  };
 
   const handleLogout = async () => {
     Alert.alert(
@@ -128,27 +166,44 @@ export default function ScannerScreen() {
   return (
     <View style={styles.container}>
       <CameraView 
-        style={styles.camera} 
-        facing="back"
+        style={StyleSheet.absoluteFillObject} 
+        facing={facing}
+        enableTorch={isFlashOn}
         onBarcodeScanned={isScanning ? undefined : handleBarcodeScanned}
         barcodeScannerSettings={{
           barcodeTypes: ["qr"],
         }}
-      >
-        <View style={styles.overlay}>
-          <View style={styles.scanBox} />
-          <Text style={styles.scanText}>
-            Arahkan QR Code siswa ke dalam kotak
-          </Text>
-          
-          {isProcessing && (
-            <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color="#10B981" />
-              <Text style={styles.loadingText}>Memproses...</Text>
-            </View>
-          )}
+      />
+      <View style={styles.overlay}>
+        <View style={styles.scanBoxContainer}>
+          <View style={[styles.corner, styles.topLeft]} />
+          <View style={[styles.corner, styles.topRight]} />
+          <View style={[styles.corner, styles.bottomLeft]} />
+          <View style={[styles.corner, styles.bottomRight]} />
+          <Animated.View style={[styles.laser, { transform: [{ translateY }] }]} />
         </View>
-      </CameraView>
+        
+        <Text style={styles.scanText}>
+          Arahkan QR Code siswa ke dalam kotak
+        </Text>
+
+        <View style={styles.controlsContainer}>
+          <TouchableOpacity style={styles.controlButton} onPress={toggleFlash}>
+            <Ionicons name={isFlashOn ? "flash" : "flash-off"} size={28} color="white" />
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.controlButton} onPress={toggleCameraFacing}>
+            <Ionicons name="camera-reverse-outline" size={28} color="white" />
+          </TouchableOpacity>
+        </View>
+        
+        {isProcessing && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#10B981" />
+            <Text style={styles.loadingText}>Memproses...</Text>
+          </View>
+        )}
+      </View>
     </View>
   );
 }
@@ -194,13 +249,56 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  scanBox: {
+  scanBoxContainer: {
     width: SCAN_BOX_SIZE,
     height: SCAN_BOX_SIZE,
-    borderWidth: 2,
-    borderColor: '#10B981',
-    backgroundColor: 'transparent',
-    borderRadius: 16,
+    position: 'relative',
+  },
+  corner: {
+    position: 'absolute',
+    width: 40,
+    height: 40,
+    borderColor: '#FBBF24',
+  },
+  topLeft: {
+    top: 0,
+    left: 0,
+    borderTopWidth: 4,
+    borderLeftWidth: 4,
+    borderTopLeftRadius: 16,
+  },
+  topRight: {
+    top: 0,
+    right: 0,
+    borderTopWidth: 4,
+    borderRightWidth: 4,
+    borderTopRightRadius: 16,
+  },
+  bottomLeft: {
+    bottom: 0,
+    left: 0,
+    borderBottomWidth: 4,
+    borderLeftWidth: 4,
+    borderBottomLeftRadius: 16,
+  },
+  bottomRight: {
+    bottom: 0,
+    right: 0,
+    borderBottomWidth: 4,
+    borderRightWidth: 4,
+    borderBottomRightRadius: 16,
+  },
+  laser: {
+    position: 'absolute',
+    left: 10,
+    right: 10,
+    height: 2,
+    backgroundColor: '#FBBF24',
+    shadowColor: '#FBBF24',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 12,
+    elevation: 4,
   },
   scanText: {
     color: 'white',
@@ -209,6 +307,16 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     textAlign: 'center',
     paddingHorizontal: 24,
+  },
+  controlsContainer: {
+    flexDirection: 'row',
+    marginTop: 32,
+    gap: 32,
+  },
+  controlButton: {
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    padding: 16,
+    borderRadius: 50,
   },
   loadingContainer: {
     position: 'absolute',
