@@ -120,6 +120,14 @@ export default function LoginScreen() {
             <Text style={styles.loginButtonText}>Masuk</Text>
           )}
         </TouchableOpacity>
+
+        {/* Sentry Test Button */}
+        <TouchableOpacity 
+          style={styles.testSentryButton} 
+          onPress={() => { throw new Error("Test Sentry Error from Mobile Login!"); }}
+        >
+          <Text style={styles.testSentryButtonText}>Test Sentry Error</Text>
+        </TouchableOpacity>
       </View>
 
       {/* Footer */}
@@ -230,5 +238,17 @@ const styles = StyleSheet.create({
   footerText: {
     fontSize: 12,
     color: '#6B7280', // Gray 500
+  },
+  testSentryButton: {
+    backgroundColor: '#EF4444', // Red 500
+    paddingVertical: 12,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  testSentryButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
 });
