@@ -13,6 +13,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
+import { login } from '../api/auth';
 
 type RootStackParamList = {
   Login: undefined;
@@ -36,7 +37,6 @@ export default function LoginScreen() {
 
     setIsLoading(true);
     try {
-      const { login } = await import('../api/auth');
       const response = await login(username, password);
       
       if (response.success) {
@@ -119,14 +119,6 @@ export default function LoginScreen() {
           ) : (
             <Text style={styles.loginButtonText}>Masuk</Text>
           )}
-        </TouchableOpacity>
-
-        {/* Sentry Test Button */}
-        <TouchableOpacity 
-          style={styles.testSentryButton} 
-          onPress={() => { throw new Error("Test Sentry Error from Mobile Login!"); }}
-        >
-          <Text style={styles.testSentryButtonText}>Test Sentry Error</Text>
         </TouchableOpacity>
       </View>
 
